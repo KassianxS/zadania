@@ -4,9 +4,7 @@
 
 <img width="839" height="486" alt="Снимок экрана 2026-05-30 130109" src="https://github.com/user-attachments/assets/8edabf77-29fa-4bf2-965f-7f35e87068af" />
 
-## Цель
 
-Определить корректный ключ активации для приложения `5.exe` (Crackme #2) методом статического анализа.
 
 ---
 
