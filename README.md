@@ -400,43 +400,33 @@ v8 = 00000F02
 Для получения корректного серийного номера был реализован обратный алгоритм, позволяющий восстановить исходные значения, которые после обработки функцией проверки приводят к найденным контрольным константам.
 
 ```c
-def ctypes_int32(value: int) -> int:
-    """Приводит значение к 32-битному целому (беззнаковому)."""
-    return value & 0xFFFFFFFF
+def uint32(x): return x & 0xFFFFFFFF
 
-def generate_key() -> str:
-    v5 = 0x27C51458
-    v6 = 0xF9C92FE1
-    v7 = 0xF34A28A0
-    v8 = 0x00000F02
+def solve_keygen():
+    v8     = 0x00000F02
+    target = (0x27C51458, 0xF9C92FE1, 0xF34A28A0)
+    v10    = 0  # ::String пустая -> strtoul возвращает 0
 
+    C1, C2, C3 = 986598842, 946341097, 1670772768
+    C4, C5, C6 = 0xE93E7D9A, 0x4E192BBA, 1594596065
+
+    def reverse_round(v5, v6, v7):
+        v14    = uint32((v5 ^ C4) - C3)
+        v12    = uint32((v7 - C6) ^ (v14 + C3))
+        v13    = v14 ^ (v12 >> 3)
+        v6_old = v10 ^ uint32((v6 ^ C5) - v13)
+        v5_old = uint32(v12 - C1) ^ v6_old
+        v7_old = uint32((v12 ^ uint32(v13 - v10)) - C2)
+        return v5_old, v6_old, v7_old
+
+    v5, v6, v7 = target
     for _ in range(v8):
-        tmp_x = ctypes_int32(v5 ^ 0x82A34C31)
+        v5, v6, v7 = reverse_round(v5, v6, v7)
 
-        v12 = ctypes_int32(v7 + 730913689) ^ tmp_x
-        v14 = ctypes_int32(tmp_x + 1084439911)
-        v13 = ctypes_int32(v14 ^ (v12 >> 3))
-
-        v6_old = ctypes_int32(
-            ctypes_int32(v6 ^ 0x3B8282EE) - v13
-        )
-
-        v5_old = ctypes_int32(
-            ctypes_int32(v12 - 513126785) ^ v6_old
-        )
-
-        v7_old = ctypes_int32(
-            ctypes_int32(v13 ^ v12) - 989527920
-        )
-
-        v5 = v5_old
-        v6 = v6_old
-        v7 = v7_old
-
-    return f"{v5:08X}-{v6:08X}-{v7:08X}-{v8:08X}"
+    print(f"{v5:08X}-{v6:08X}-{v7:08X}-{v8:08X}")
 
 if __name__ == "__main__":
-    print(generate_key())
+    solve_keygen()
 ```
     
 В результате был получен следующий серийный номер:
